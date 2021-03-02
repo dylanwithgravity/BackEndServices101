@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using LibraryApi.Services;
+using Microsoft.AspNetCore.Mvc;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -8,16 +9,21 @@ namespace LibraryApi.Controllers
 {
     public class StatusController : ControllerBase
     {
+        private readonly ILookupServerStatus _statusLookup;
+
+        public StatusController(ILookupServerStatus statusLookup)
+        {
+            _statusLookup = statusLookup;
+        }
+
 
         // GET /status
         [HttpGet("status")]
         public StatusResponse GetTheStatus()
         {
-            return new StatusResponse
-            {
-                Message = "Everything is going great. Thanks for asking!",
-                LastChecked = DateTime.Now
-            };
+            // WTCYWYH
+            StatusResponse status = _statusLookup.GetStatusFor();
+            return status;
         }
 
         // GET /customers/13
@@ -53,7 +59,7 @@ namespace LibraryApi.Controllers
         }
 
         [HttpGet("whoami")]
-        public ActionResult WhoAmi([FromHeader(Name ="User-Agent")]string userAgent)
+        public ActionResult WhoAmi([FromHeader(Name = "User-Agent")] string userAgent)
         {
 
             return Ok($"I have no idea, but you are running {userAgent}");
